@@ -1,34 +1,27 @@
 pipeline {
-  agent any
+    agent any
 
-  stages {
-
-    stage('Install') {
-      steps {
-        sh 'npm install'
-      }
+    tools {
+        nodejs "Node18"
     }
 
-    stage('Test') {
-      steps {
-        sh 'npm test'
-      }
-    }
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
 
-    stage('Build Docker') {
-      steps {
-        sh 'docker build -t local-cicd-app .'
-      }
-    }
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }
 
-    stage('Deploy') {
-      steps {
-        sh '''
-          docker stop app || true
-          docker rm app || true
-          docker run -d -p 3000:3000 --name app local-cicd-app
-        '''
-      }
+        stage('Run Backend') {
+            steps {
+                sh 'node index.js &'
+            }
+        }
     }
-  }
 }
