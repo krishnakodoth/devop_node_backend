@@ -1,17 +1,12 @@
 pipeline {
-    agent any
-
-    tools {
-        nodejs "Node18"
+    agent {
+        docker {
+            image 'node:18'
+            args '-u root'
+        }
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
         stage('Install Dependencies') {
             steps {
                 sh 'npm install'
